@@ -63,6 +63,11 @@ public final class FakeRemoteVulnDetector implements RemoteVulnDetector {
   }
 
   @Override
+  public ImmutableList<Vulnerability> getAdvisories() {
+    return getAdvisoriesStatic();
+  }
+
+  @Override
   public DetectionReportList detect(TargetInfo target, ImmutableList<NetworkService> services) {
     ImmutableList<ImmutableList<DetectionReport>> detectionReports =
         matchedPluginsToRun.stream()
@@ -84,13 +89,7 @@ public final class FakeRemoteVulnDetector implements RemoteVulnDetector {
         .setNetworkService(networkService)
         .setDetectionTimestamp(Timestamps.fromMillis(1234567890L))
         .setDetectionStatus(DetectionStatus.VULNERABILITY_VERIFIED)
-        .setVulnerability(
-            Vulnerability.newBuilder()
-                .setMainId(
-                    VulnerabilityId.newBuilder().setPublisher("GOOGLE").setValue("FakeRemoteVuln"))
-                .setSeverity(Severity.CRITICAL)
-                .setTitle("FakeTitle")
-                .setDescription("FakeRemoteDescription"))
+        .setVulnerability(getAdvisoriesStatic().get(0))
         .build();
   }
 
@@ -111,5 +110,16 @@ public final class FakeRemoteVulnDetector implements RemoteVulnDetector {
   @Override
   public void addMatchedPluginToDetect(MatchedPlugin plugin) {
     this.matchedPluginsToRun.add(plugin);
+  }
+
+  private static ImmutableList<Vulnerability> getAdvisoriesStatic() {
+    return ImmutableList.of(
+        Vulnerability.newBuilder()
+            .setMainId(
+                VulnerabilityId.newBuilder().setPublisher("GOOGLE").setValue("FakeRemoteVuln"))
+            .setSeverity(Severity.CRITICAL)
+            .setTitle("FakeTitle")
+            .setDescription("FakeRemoteDescription")
+            .build());
   }
 }

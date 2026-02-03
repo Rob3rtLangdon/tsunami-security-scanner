@@ -4,15 +4,41 @@ dependencies {
     implementation project(':tsunami-common')
     implementation project(':tsunami-plugin')
     implementation project(':tsunami-proto')
-    implementation deps.flogger
-    implementation deps.flogger_google_ext
-    implementation deps.guava
-    implementation deps.javax_inject
-    implementation deps.protobuf
-    implementation deps.protobuf_util
 
-    testImplementation deps.guice
-    testImplementation deps.guava_testlib
-    testImplementation deps.junit
-    testImplementation deps.truth, deps.truth8, deps.truth_protobuf
+    implementation "com.google.flogger:flogger:0.9"
+    implementation "com.google.flogger:google-extensions:0.9"
+    implementation "com.google.guava:guava:33.0.0-jre"
+    implementation "com.google.protobuf:protobuf-java-util:3.25.5"
+    implementation "com.google.protobuf:protobuf-java:3.25.5"
+    implementation "javax.inject:javax.inject:1"
+
+    testImplementation "com.google.guava:guava-testlib:33.0.0-jre"
+    testImplementation "com.google.truth:truth:1.4.4"
+    testImplementation "com.google.truth.extensions:truth-java8-extension:1.4.4"
+    testImplementation "com.google.truth.extensions:truth-proto-extension:1.4.4"
+    testImplementation "junit:junit:4.13.2"
 }
+
+tasks.named("javadoc") {
+    dependsOn(":tsunami-plugin:shadowJar")
+    dependsOn(":tsunami-proto:shadowJar")
+}
+
+tasks.named("shadowJar") {
+    dependsOn(":tsunami-proto:shadowJar")
+    dependsOn(":tsunami-plugin:shadowJar")
+}
+
+tasks.named("compileTestJava") {
+    dependsOn(":tsunami-plugin:shadowJar")
+    dependsOn(":tsunami-proto:shadowJar")
+}
+
+tasks.named("compileJava") {
+    dependsOn(":tsunami-plugin:shadowJar")
+}
+
+tasks.named('compileJava') {
+    dependsOn(':tsunami-proto:shadowJar')
+}
+
